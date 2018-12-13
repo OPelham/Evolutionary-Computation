@@ -2,28 +2,31 @@ package evolutionaryComputation;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import nz.ac.vuw.kol.OptimisationFunction;
 
 public class Test {
 
-	static int numOfGens = 150000;
-	static int generationSize = 100;
+	static int numOfGens = 5000;
+	static int generationSize = 10000;
 	static double lowerRange = -10;
 	static double upperRange = 10;
 	static int numOfRecombinationPairs = 2;
 	static int sampleSize = 30;
 	static double mutationFrequency = .5; // percentage chance of mutation
 	static double mutationSize = .4;
+	static int lowerRankMutationSize = 4;
 	static ArrayList<double[]> currentGeneration = new ArrayList<>();
 	static Map<Integer, Double> subset = new HashMap<>();  //<position in currentGeneration array, phenotype>
-	
+
 	static long mutationCount = 0;
 
 	/**
@@ -57,6 +60,7 @@ public class Test {
 	}
 
 	public static void pickSubset() {
+		Random rand = new Random();		
 		//first clear old subset
 		subset.clear();
 		//set tickets
@@ -67,32 +71,33 @@ public class Test {
 		//pick a number of random parents for subset and store in map with in
 		for (int i=0; i<sampleSize; i++) {
 			//to avoid double ups use 'tickets'	
-			Random rand = new Random();			
-			int selectedPosition = (int) (tickets.size()-1 * rand.nextDouble());
+				
+//			System.out.println("TICKET SIZE: " + tickets.size());
+			int selectedPosition = (int) ((tickets.size()-1) * (rand.nextDouble()));
 			//process ticket
-//			System.out.println("debug ticket size");
-//			System.out.println(tickets.size());
-//			System.out.println("selected position");
-//			System.out.println(selectedPosition);
+			//			System.out.println("debug ticket size");
+			//			System.out.println(tickets.size());
+			//			System.out.println("selected position");
+			//			System.out.println(selectedPosition);
 			int ticket = tickets.get(selectedPosition); //ticket is a ubique int from 0 to generation size -1
-//			System.out.println(ticket);
+			//			System.out.println(ticket);
 			//use this to get position in current gen and fitness and store in map
 
 			double[] selectedParent = currentGeneration.get(ticket);
-			
-			mutate(selectedParent);
+
+
 
 			double selectedParentFitness = OptimisationFunction.unknownFunction(selectedParent);
 			subset.put(ticket, selectedParentFitness);
 			//delete ticket
-			tickets.remove(ticket);
+			tickets.remove(selectedPosition);
 
 		} 
-//		System.out.println("checking subset");
-//		for(double fitness: subset.values()) {
-//			System.out.println(fitness);
-//		}
-//		System.out.println("subset check complete");
+//				System.out.println("checking subset");
+//				for(Map.Entry<Integer, Double> fitness: subset.entrySet()) {
+//					System.out.println("Key of subset" + fitness.getKey() + "value of subset: " + fitness.getValue());
+//				}
+//				System.out.println("subset check complete");
 
 		rankSubset();
 	}
@@ -104,24 +109,36 @@ public class Test {
 		int minPos = -1;
 		for(int i = 0; i<sampleSize; i++) {
 
-			double min = 999999999;
+			double min = Double.MAX_VALUE;
 			for ( Map.Entry<Integer, Double> e: subset.entrySet()) {
+				
 				if (e.getValue() != null && e.getValue() < min && !(rankedPositions.contains(e.getKey()))) {
 					min = e.getValue();
 					minPos = e.getKey();
 
 				}
+				
 			}
 			rankedPositions.add(minPos);
-//			System.out.println("min pos added");
-//			System.out.println(minPos);
-//			System.out.println("fitness of minpos");
-//			System.out.println(min);
-//			System.out.println("rankingsize");
-//			System.out.println(rankedPositions.size());
-
 			
+//			System.out.println("contents of ranked selection");
+//			for(double d: rankedPositions) {
+//				System.out.println(d);
+//			}
+			
+			//			System.out.println("min pos added");
+			//			System.out.println(minPos);
+			//			System.out.println("fitness of minpos");
+			//			System.out.println(min);
+			//			System.out.println("rankingsize");
+			//			System.out.println(rankedPositions.size());
 
+
+
+		}
+		for (int i=0; i<lowerRankMutationSize; i++) {
+			int lowestPos = rankedPositions.get((rankedPositions.size()-i-1));
+			mutate(currentGeneration.get(lowestPos));
 		}
 		selectBreeders(rankedPositions);
 
@@ -132,7 +149,7 @@ public class Test {
 	private static void selectBreeders(ArrayList<Integer> rankedPosList) {
 		//depending on number of breeders pick and call breeding on apprirate parents from ranked subset
 		for (int i=0; i<numOfRecombinationPairs; i++) {
-			int parent1 = rankedPosList.get( ((i+1)*2-1)  );
+			int parent1 = rankedPosList.get( ((i+1)*2-1)  ); //change to i and i++
 			int parent2 = rankedPosList.get( ((i+1)*2) );
 			breedPair(parent1, parent2);
 
@@ -143,14 +160,22 @@ public class Test {
 	private static void breedPair(int parent1Index, int parent2Index) {
 		double[] parent1 = currentGeneration.get(parent1Index);
 		double[] parent2 = currentGeneration.get(parent2Index);
+
+//		System.out.println("ref for orig: " + currentGeneration.get(parent1Index).toString());
+//		System.out.println("ref for copy: " + parent1.toString());
 		//recombine to make children and overwrite parent with children
 		double[] child1 = new double[5];
 		double[] child2 = new double[5];
 		//recombintation
 		Random rand = new Random();
+//		System.out.println("=====================================================");
+//		System.out.println(Arrays.toString(parent1));
+//		System.out.println(Arrays.toString(parent2));
 		for (int i=0; i<5; i++) {
-			if(rand.nextDouble() < .5) {
+			if(rand.nextDouble() < 0.5) {
+//				System.out.println("child ref before: " + Arrays.toString(parent1));
 				child1[i] = parent1[i];
+//				System.out.println("child ref after: " + Arrays.toString(child1));
 				child2[i] = parent2[i];
 			} else {
 				child1[i] = parent2[i];
@@ -158,28 +183,36 @@ public class Test {
 			}
 
 		}
+//		System.out.println(Arrays.toString(child1));
+//		System.out.println(Arrays.toString(child2));
 		//here just overwrite parent or do so only if child better fitness?
 		//overwrite
 //		System.out.println("-------parent before--------");
 //		for (double d: parent1) {
-//			System.out.println(d);
+//			System.out.println("parent: " + d);
 //		}
+//		
+//		for (double d: child1) {
+//			System.out.println("child: " + d);
+//		}
+		
+		
 		if(OptimisationFunction.unknownFunction(child1) < OptimisationFunction.unknownFunction(parent1)) {
-			parent1 = child1;
+			currentGeneration.set(parent1Index, child1);
 		}
-		
+
 		if(OptimisationFunction.unknownFunction(child2) < OptimisationFunction.unknownFunction(parent2)) {
-			parent2 = child2;
+			currentGeneration.set(parent2Index, child2);
 		}
-		
-		
+
+
 //		System.out.println("-------parent after--------");
 //		for (double d: parent1) {
 //			System.out.println(d);
 //		}
-	
-		
-	
+
+
+
 
 	}
 
@@ -191,7 +224,7 @@ public class Test {
 			int geneToMutate = (int) (rand.nextDouble()*5);
 			mutatee[geneToMutate] += mutation;
 			mutationCount ++;
-//			System.out.println("mutated by " + mutation);
+			//			System.out.println("mutated by " + mutation);
 		}
 	}
 
@@ -199,14 +232,14 @@ public class Test {
 	public static void main(String[] args) {
 
 		populateFirstGeneration();
-		
+
 		System.out.println("----------initial fitness----------");
 		double initMin = 99999999;
 		for(int j=0; j<generationSize; j++) {
 			if(OptimisationFunction.unknownFunction(currentGeneration.get(j))< initMin) {
 				initMin = OptimisationFunction.unknownFunction(currentGeneration.get(j));
 			}
-//			System.out.println(OptimisationFunction.unknownFunction(currentGeneration.get(j)));
+			//			System.out.println(OptimisationFunction.unknownFunction(currentGeneration.get(j)));
 		}
 		System.out.println("==========InitMin=========");
 		System.out.println(initMin);
@@ -215,25 +248,26 @@ public class Test {
 
 
 			pickSubset();
-//			System.out.println("generation number" + i);
+			//			System.out.println("generation number" + i);
 
-			
-			
+
+
 		}
-		
+
 		System.out.println("-----------final fitness----------");
 		double finalMin = 99999999;
 		for(int j=0; j<generationSize; j++) {
 			if(OptimisationFunction.unknownFunction(currentGeneration.get(j))< finalMin) {
 				finalMin = OptimisationFunction.unknownFunction(currentGeneration.get(j));
 			}
-//			System.out.println(OptimisationFunction.unknownFunction(currentGeneration.get(j)));
+			//			System.out.println(OptimisationFunction.unknownFunction(currentGeneration.get(j)));
 		}
 		System.out.println("==========FinalMin==========");
 		System.out.println(finalMin);
 		System.out.println("mutation count: " + mutationCount);
 
-
+		Random rand = new Random();
+		System.out.println(rand.nextDouble());
 
 	}
 
