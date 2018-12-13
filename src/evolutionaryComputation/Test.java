@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
+
 import nz.ac.vuw.kol.OptimisationFunction;
 
 public class Test {
@@ -13,6 +16,8 @@ public class Test {
 	static int generationSize = 100;
 	static double lowerRange = 0;
 	static double upperRange = 100;
+	static int numOfRecombinationPairs = 1;
+	static int sampleSize = 10;
 	static ArrayList<double[]> currentGeneration = new ArrayList<>();
 	static Map<Integer, Double> subset = new HashMap<>();  //<position in currentGeneration array, phenotype>
 	
@@ -46,7 +51,7 @@ public class Test {
 		}
 	}
 	
-	public static void pickSubset(int sampleSize) {
+	public static void pickSubset() {
 		//first clear old subset
 		subset.clear();
 		//set tickets
@@ -81,14 +86,63 @@ public class Test {
 			System.out.println(fitness);
 		}
 		System.out.println("subset check complete");
+		
+		rankSubset();
 	}
+	
+	//take map of subset and get positions ranked by fitness
+	public static void rankSubset() {
+		ArrayList<Integer> rankedPositions = new ArrayList<>(); //to hold int of position (of subset) in current gen sorted by fitness 
+		
+		int minPos = -1;
+		for(int i = 0; i<sampleSize; i++) {
+			
+			double min = 999999999;
+			for ( Map.Entry<Integer, Double> e: subset.entrySet()) {
+				if (e.getValue() != null && e.getValue() < min && !(rankedPositions.contains(e.getKey()))) {
+					min = e.getValue();
+					minPos = e.getKey();
+					
+				}
+			}
+			rankedPositions.add(minPos);
+			System.out.println("min pos added");
+			System.out.println(minPos);
+			System.out.println("fitness of minpos");
+			System.out.println(min);
+			System.out.println("rankingsize");
+			System.out.println(rankedPositions.size());
+			
+		}
+		
+		
+		
+	}
+	
+	//select breeders
+	private static void selectBreeders(ArrayList<Integer> rankedPosList) {
+		//depending on number of breeders pick and call breeding on apprirate parents from ranked subset
+		for (int i=1; i<=numOfRecombinationPairs; i++) {
+			int parent1 = rankedPosList.get( i*2-1 );
+			int parent2 = rankedPosList.get( i*2 );
+			
+		}
+	}
+	
+	//breed a pair and add overwrite parent with child
+	private static void breedPair(int parent1Index, int parent2Index) {
+		double[] parent1 = currentGeneration.get(parent1Index);
+		double[] parent2 = currentGeneration.get(parent2Index);
+	}
+	
+	//mutation
 	
 
 	public static void main(String[] args) {
 		
 		populateFirstGeneration();
 		System.out.println("subset fitness");
-		pickSubset(10);
+		pickSubset();
 		
 		
 		for(int i=0; i<100; i++) {
