@@ -15,7 +15,7 @@ import nz.ac.vuw.kol.OptimisationFunction;
 
 public class Computation {
 
-	static int numOfGens = 10000;
+	static int numOfGens = 40000;
 	static int generationSize = 10000;
 	static double lowerRange = -10;
 	static double upperRange = 10;
@@ -231,11 +231,13 @@ public class Computation {
 		}
 	}
 	
-	public static ArrayList<Double> compute(double mutationFreq, int selectionSize, int genSize ) { 
+	public static ArrayList<Double> compute(double mutationFreq, int selectionSize, int genSize, int lowerMutatees, int NoBreedingPairs ) { 
 		ArrayList<Double> returnList = new ArrayList<>();
 		mutationFrequency = mutationFreq;
 		sampleSize = selectionSize;
 		generationSize = genSize;
+		lowerRankMutationSize = lowerMutatees;
+		numOfRecombinationPairs = NoBreedingPairs;
 		populateFirstGeneration();
 		
 		for (int i=0; i<numOfGens; i++) {
@@ -243,7 +245,7 @@ public class Computation {
 			double genMin = 99999999;
 			double sum = 0;
 			
-			if (i % 500 == 0) {
+			if (i % 2000 == 0) {
 				
 				//min
 				for(int j=0; j<generationSize; j++) {
@@ -257,7 +259,7 @@ public class Computation {
 				}
 				double genAve = sum/generationSize;
 				
-				returnList.add(genMin);
+				returnList.add(genAve);
 				
 			}
 		}
