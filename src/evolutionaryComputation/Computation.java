@@ -231,9 +231,11 @@ public class Computation {
 		}
 	}
 	
-	public static ArrayList<Double> compute(double mutationFreq) {
+	public static ArrayList<Double> compute(double mutationFreq, int selectionSize, int genSize ) { 
 		ArrayList<Double> returnList = new ArrayList<>();
 		mutationFrequency = mutationFreq;
+		sampleSize = selectionSize;
+		generationSize = genSize;
 		populateFirstGeneration();
 		
 		for (int i=0; i<numOfGens; i++) {
@@ -241,7 +243,7 @@ public class Computation {
 			double genMin = 99999999;
 			double sum = 0;
 			
-			if (i % 1000 == 0) {
+			if (i % 500 == 0) {
 				
 				//min
 				for(int j=0; j<generationSize; j++) {
@@ -289,66 +291,66 @@ public class Computation {
 
 
 
-		for (int i=0; i<numOfGens; i++) {
-
-			pickSubset();
-			double genMin = 99999999;
-			double sum = 0;
-
-			if (i % 1000 == 0) {
-				
-				System.out.println("-----GEN "+ i + " -----");
-
-
-				
-				for(int j=0; j<generationSize; j++) {
-					if(OptimisationFunction.unknownFunction(currentGeneration.get(j))< genMin) {
-						genMin = OptimisationFunction.unknownFunction(currentGeneration.get(j));
-					}
-					
-				}
-				for (int k=0; k<generationSize; k++) {
-					sum += OptimisationFunction.unknownFunction(currentGeneration.get(k));
-				}
-				//print gen stats
-				double genAve = sum/generationSize;
-				System.out.println(genMin);
-//				System.out.println("Improvement from Initial - " + (genMin - initAve));
-				System.out.println(genAve);
-//				System.out.println("Improvement from Initial - " + (genAve - initAve));
-				
-			}
-			
-
-
-
-		}
-		
-
-		System.out.println("-----------final fitness----------");
-		double finalMin = 99999999;
-		double finalSum = 0;
-		double[] finalMinArray = new double[5];
-		for(int j=0; j<generationSize; j++) {
-			if(OptimisationFunction.unknownFunction(currentGeneration.get(j))< finalMin) {
-				finalMin = OptimisationFunction.unknownFunction(currentGeneration.get(j));
-				finalMinArray = currentGeneration.get(j);
-			}
-			//			System.out.println(OptimisationFunction.unknownFunction(currentGeneration.get(j)));
-		}
-		for (int k=0; k<generationSize; k++) {
-			finalSum += OptimisationFunction.unknownFunction(currentGeneration.get(k));
-		}
-		double finalAve = finalSum/generationSize;
-		System.out.println(finalMin);
-//		System.out.println("Improvement from Initial - " + (finalMin - initMin));
-		System.out.println(finalAve);
-//		System.out.println("Improvement from Initial - " + (finalAve - initAve));
-		
-		System.out.println(" ");
-		
-		System.out.println("mutation count: " + mutationCount);
-		System.out.println(Arrays.toString(finalMinArray));
+//		for (int i=0; i<numOfGens; i++) {
+//
+//			pickSubset();
+//			double genMin = 99999999;
+//			double sum = 0;
+//
+//			if (i % 1000 == 0) {
+//				
+//				System.out.println("-----GEN "+ i + " -----");
+//
+//
+//				
+//				for(int j=0; j<generationSize; j++) {
+//					if(OptimisationFunction.unknownFunction(currentGeneration.get(j))< genMin) {
+//						genMin = OptimisationFunction.unknownFunction(currentGeneration.get(j));
+//					}
+//					
+//				}
+//				for (int k=0; k<generationSize; k++) {
+//					sum += OptimisationFunction.unknownFunction(currentGeneration.get(k));
+//				}
+//				//print gen stats
+//				double genAve = sum/generationSize;
+//				System.out.println(genMin);
+////				System.out.println("Improvement from Initial - " + (genMin - initAve));
+//				System.out.println(genAve);
+////				System.out.println("Improvement from Initial - " + (genAve - initAve));
+//				
+//			}
+//			
+//
+//
+//
+//		}
+//		
+//
+//		System.out.println("-----------final fitness----------");
+//		double finalMin = 99999999;
+//		double finalSum = 0;
+//		double[] finalMinArray = new double[5];
+//		for(int j=0; j<generationSize; j++) {
+//			if(OptimisationFunction.unknownFunction(currentGeneration.get(j))< finalMin) {
+//				finalMin = OptimisationFunction.unknownFunction(currentGeneration.get(j));
+//				finalMinArray = currentGeneration.get(j);
+//			}
+//			//			System.out.println(OptimisationFunction.unknownFunction(currentGeneration.get(j)));
+//		}
+//		for (int k=0; k<generationSize; k++) {
+//			finalSum += OptimisationFunction.unknownFunction(currentGeneration.get(k));
+//		}
+//		double finalAve = finalSum/generationSize;
+//		System.out.println(finalMin);
+////		System.out.println("Improvement from Initial - " + (finalMin - initMin));
+//		System.out.println(finalAve);
+////		System.out.println("Improvement from Initial - " + (finalAve - initAve));
+//		
+//		System.out.println(" ");
+//		
+//		System.out.println("mutation count: " + mutationCount);
+//		System.out.println(Arrays.toString(finalMinArray));
 
 
 	}
