@@ -70,7 +70,7 @@ public class MutationFrequencyGraph extends Application {
 		
 		primaryStage.setTitle("Mutation Frequency");
 		final NumberAxis xAxis = new NumberAxis();
-		final NumberAxis yAxis = new NumberAxis(9.0, 17.5, 0.5);
+		final NumberAxis yAxis = new NumberAxis(9.0, 15.5, 0.5);
 		xAxis.setLabel("Generation");
 		yAxis.setLabel("Fitness");
 		
@@ -83,9 +83,9 @@ public class MutationFrequencyGraph extends Application {
         
         
         int i = 0;
-        for (int j=0; j<(Computation.numOfGens/100); j++) {
+        for (int j=0; j<(Computation.numOfGens/Computation.graphTicketInterval); j++) {
         	series1.getData().add(new XYChart.Data(i, aveMinList1.get(j)));
-        	i = i + 100;
+        	i = (int) (i + Computation.graphTicketInterval);
         }
         
         
@@ -95,9 +95,9 @@ public class MutationFrequencyGraph extends Application {
         series2.setName("5");
         
         i = 0;
-        for (int j=0; j<(Computation.numOfGens/100); j++) {
+        for (int j=0; j<(Computation.numOfGens/Computation.graphTicketInterval); j++) {
         	series2.getData().add(new XYChart.Data(i, aveMinList2.get(j)));
-        	i = i + 100;
+        	i = (int) (i + Computation.graphTicketInterval);
         }
         
         
@@ -106,9 +106,9 @@ public class MutationFrequencyGraph extends Application {
         series3.setName("15");
         
         i = 0;
-        for (int j=0; j<(Computation.numOfGens/100); j++) {
+        for (int j=0; j<(Computation.numOfGens/Computation.graphTicketInterval); j++) {
         	series3.getData().add(new XYChart.Data(i, aveMinList3.get(j)));
-        	i = i + 100;
+        	i = (int) (i + Computation.graphTicketInterval);
         }
         
         
@@ -117,9 +117,9 @@ public class MutationFrequencyGraph extends Application {
         series4.setName("40");
         
         i = 0;
-        for (int j=0; j<(Computation.numOfGens/100); j++) {
+        for (int j=0; j<(Computation.numOfGens/Computation.graphTicketInterval); j++) {
         	series4.getData().add(new XYChart.Data(i, aveMinList4.get(j)));
-        	i = i + 100;
+        	i = (int) (i + Computation.graphTicketInterval);
         }
         
         

@@ -15,7 +15,7 @@ import nz.ac.vuw.kol.OptimisationFunction;
 
 public class Computation {
 
-	static int numOfGens = 5000;
+	static int numOfGens = 2500;
 	static int generationSize = 10000;
 	static double lowerRange = -10;
 	static double upperRange = 10;
@@ -28,6 +28,7 @@ public class Computation {
 	static Map<Integer, Double> subset = new HashMap<>();  //<position in currentGeneration array, phenotype>
 
 	static long mutationCount = 0;
+	static double graphTicketInterval = 50;
 
 	/**
 	 * Creates a new parent with random doubles in phenotype (double[5]) within given range
@@ -245,7 +246,7 @@ public class Computation {
 			double genMin = 99999999;
 			double sum = 0;
 			
-			if (i % 100 == 0) {
+			if (i % graphTicketInterval == 0) {
 				
 				//min
 				for(int j=0; j<generationSize; j++) {
