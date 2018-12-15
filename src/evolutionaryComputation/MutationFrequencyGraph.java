@@ -16,6 +16,19 @@ public class MutationFrequencyGraph extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
+		ArrayList<Double> list0 = Computation.compute(0, 100, 1000, 10, 2);
+		ArrayList<Double> list0a = Computation.compute(0, 100, 1000, 10, 2);
+		ArrayList<Double> list0b = Computation.compute(0, 100, 1000, 10, 2);
+		ArrayList<Double> list0c = Computation.compute(0, 100, 1000, 10, 2);
+		ArrayList<Double> list0d = Computation.compute(0, 100, 1000, 10, 2);
+		ArrayList<Double> aveMinList0 = new ArrayList<>();
+		for (int i=0; i<list0.size(); i++) {
+			double sum = list0.get(i) + list0a.get(i) + list0b.get(i) + list0c.get(i) + list0d.get(i);
+			double ave = sum/5;
+			aveMinList0.add(ave);
+			System.out.println(ave);
+		}
+		
 		ArrayList<Double> list1 = Computation.compute(0.5, 100, 1000, 10, 2);
 		ArrayList<Double> list1a = Computation.compute(0.5, 100, 1000, 10, 2);
 		ArrayList<Double> list1b = Computation.compute(0.5, 100, 1000, 10, 2);
@@ -70,7 +83,7 @@ public class MutationFrequencyGraph extends Application {
 		
 		primaryStage.setTitle("Mutation Frequency");
 		final NumberAxis xAxis = new NumberAxis();
-		final NumberAxis yAxis = new NumberAxis(9.0, 15.5, 0.5);
+		final NumberAxis yAxis = new NumberAxis(10.0, 15.5, 0.5);
 		xAxis.setLabel("Generation");
 		yAxis.setLabel("Fitness");
 		
@@ -78,11 +91,23 @@ public class MutationFrequencyGraph extends Application {
 		lineChart.setTitle("Mutation Frequency and Best Individual Fitness");
 		
 		
+		XYChart.Series series0 = new XYChart.Series();
+        series0.setName("0");
+        
+        
+        int i = 0;
+        for (int j=0; j<(Computation.numOfGens/Computation.graphTicketInterval); j++) {
+        	series0.getData().add(new XYChart.Data(i, aveMinList0.get(j)));
+        	i = (int) (i + Computation.graphTicketInterval);
+        }
+		
+		
+		
 		XYChart.Series series1 = new XYChart.Series();
         series1.setName("0.5");
         
         
-        int i = 0;
+        i = 0;
         for (int j=0; j<(Computation.numOfGens/Computation.graphTicketInterval); j++) {
         	series1.getData().add(new XYChart.Data(i, aveMinList1.get(j)));
         	i = (int) (i + Computation.graphTicketInterval);
@@ -125,7 +150,7 @@ public class MutationFrequencyGraph extends Application {
         
         
         Scene scene  = new Scene(lineChart,800,600);       
-        lineChart.getData().addAll(series1, series2, series3, series4);
+        lineChart.getData().addAll(series0, series1, series2, series3, series4);
        
         primaryStage.setScene(scene);
         primaryStage.show();
